@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "d": "next dev -p 5000",
+    "de": "node start-dev.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "precommit": "pnpm lint"
+    "precommit": "pnpm lint",
+    "format:check": "prettier --check . --ignore-path .prettierignore",
+    "format": "prettier --write . --ignore-path .prettierignore"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
@@ -29,6 +33,10 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "husky": "^8.0.3"
+    "dotenv": "^16.0.3",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
+    "prettier": "^2.8.8"
   }
 }
