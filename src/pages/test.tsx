@@ -13,7 +13,10 @@ export default function Home() {
   return (
     <div>
       <h1>Counter: {count}</h1>
-      <button className="btn" onClick={() => dispatch(increment())}>
+      <button
+        className="btn shadow-primary"
+        onClick={() => dispatch(increment())}
+      >
         Increment
       </button>
       <button className="btn" onClick={() => dispatch(decrement())}>
