@@ -1,0 +1,8 @@
+/* styles/searchbar.module.css */
+.searchInput {
+  @apply opacity-0 transition-all duration-300 ease-in-out;
+}
+
+.searchInput.show {
+  @apply block opacity-100;
+}

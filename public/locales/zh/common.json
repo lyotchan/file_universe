@@ -1,3 +1,47 @@
 {
-  "title": "悟空"
+  "index": {
+    "header": {
+      "title": "悟空",
+      "searchBarPlaceholder": "搜索...",
+      "cancelBtn": "取消",
+      "themes": [
+        { "value": "light", "label": "明亮" },
+        { "value": "dark", "label": "黑暗" },
+        { "value": "cupcake", "label": "杯子蛋糕" },
+        { "value": "bumblebee", "label": "大黄蜂" },
+        { "value": "emerald", "label": "祖母绿" },
+        { "value": "corporate", "label": "企业" },
+        { "value": "synthwave", "label": "合成波浪" },
+        { "value": "retro", "label": "复古" },
+        { "value": "cyberpunk", "label": "赛博朋克" },
+        { "value": "valentine", "label": "情人节" },
+        { "value": "halloween", "label": "万圣节" },
+        { "value": "garden", "label": "花园" },
+        { "value": "forest", "label": "森林" },
+        { "value": "aqua", "label": "水绿色" },
+        { "value": "lofi", "label": "低保真" },
+        { "value": "pastel", "label": "柔和色彩" },
+        { "value": "fantasy", "label": "奇幻" },
+        { "value": "wireframe", "label": "线框" },
+        { "value": "black", "label": "纯黑" },
+        { "value": "luxury", "label": "奢华" },
+        { "value": "dracula", "label": "德古拉" },
+        { "value": "cmyk", "label": "CMYK" },
+        { "value": "autumn", "label": "秋天" },
+        { "value": "business", "label": "商业" },
+        { "value": "acid", "label": "酸性" },
+        { "value": "lemonade", "label": "柠檬水" },
+        { "value": "night", "label": "夜晚" },
+        { "value": "coffee", "label": "咖啡" },
+        { "value": "winter", "label": "冬季" }
+      ],
+      "themeLabel": "主题"
+    },
+    "footer": {
+      "owner": "Lyot Chan",
+      "desc": "自2023年以来提供可靠的技术",
+      "socialMedia": "社交媒体"
+    },
+    "content": {}
+  }
 }

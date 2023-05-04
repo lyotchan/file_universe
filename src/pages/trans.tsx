@@ -5,7 +5,7 @@ import {
   GetStaticPropsResult
 } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
+import LanguageSwitcher from '@/components/Header/LanguageSwitcher'
 interface Props {
   _nextI18Next?: {
     initialI18nStore: any
@@ -15,7 +15,10 @@ interface Props {
   }
   timeout: Number
 }
-function HomePage({ timeout }) {
+interface timeoutType {
+  timeout: number
+}
+function HomePage({ timeout }: timeoutType) {
   const { t } = useTranslation(['common', 'index'])
   return (
     <>
