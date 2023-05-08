@@ -44,8 +44,7 @@ const FileGrid = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          '/api/fileInfo/any' +
-            breadcrumbs.reduce((a, b) => a + b.path, '')
+          '/api/fileInfo/any' + breadcrumbs.reduce((a, b) => a + b.path, '')
         )
         const responseData = await response.json()
         responseData.push({
@@ -67,7 +66,7 @@ const FileGrid = () => {
         <ul>
           {breadcrumbs.map(({ path, name }, index) => (
             <li
-              className="link link-hover"
+              className="link-hover link"
               key={path}
               onClick={() => {
                 selectBreadcrumbs(index)

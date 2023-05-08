@@ -121,7 +121,14 @@ const FileInfoCard = ({
               </button>
             ) : (
               <>
-                <button onClick={() => {downloadLargeFile(breadcrumbs.reduce((a, b) => a + b.path, '') + name)}} className="btn-ghost btn-active btn-sm btn inline-flex items-center">
+                <button
+                  onClick={() => {
+                    downloadLargeFile(
+                      breadcrumbs.reduce((a, b) => a + b.path, '') + name
+                    )
+                  }}
+                  className="btn-ghost btn-active btn-sm btn inline-flex items-center"
+                >
                   <ArrowDownTrayIcon className="h-4 w-4 md:mr-1" />
                   <span className="hidden md:inline">下载</span>
                 </button>
