@@ -1,0 +1,26 @@
+.modal {
+  @apply fixed inset-0 z-50 hidden items-center justify-center;
+}
+
+.modal-show {
+  @apply flex;
+}
+
+.modal-backdrop {
+  @apply absolute inset-0 bg-black opacity-0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-show .modal-backdrop {
+  @apply opacity-50;
+}
+
+.modal-content {
+  @apply relative rounded-lg bg-white p-6 shadow-lg;
+  transform: scale(0.75);
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal-show .modal-content {
+  transform: scale(1);
+}
