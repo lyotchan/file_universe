@@ -7,14 +7,29 @@ import { useIndexContext } from '@/contexts/IndexContext'
 interface showInputType {
   showInput: Boolean
   setShowInput: Function
+  setSearchContent: Function
+  searchContent: string
 }
 
-const SearchBar = ({ showInput, setShowInput }: showInputType) => {
+const SearchBar = ({
+  showInput,
+  setShowInput,
+  setSearchContent,
+  searchContent
+}: showInputType) => {
   const {
     header: { searchBarPlaceholder, cancelBtn }
   } = useIndexContext()
+  let content = searchContent
   const handleButtonClick = () => {
+    setSearchContent('')
     setShowInput(!showInput)
+  }
+
+  const handleEnter = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      setSearchContent(content)
+    }
   }
   return (
     <div className="flex w-full">
@@ -27,9 +42,15 @@ const SearchBar = ({ showInput, setShowInput }: showInputType) => {
           <input
             type="text"
             placeholder={searchBarPlaceholder}
-            className="input-bordered input w-full max-w-md"
-            onBlur={handleButtonClick}
+            className="input-bordered input flex-grow"
+            onBlur={() => {
+              if (!content) handleButtonClick()
+            }}
             autoFocus
+            onChange={e => {
+              content = e.target.value
+            }}
+            onKeyDown={handleEnter}
           />
         )}
         <button onClick={handleButtonClick} className="btn-ghost btn">
@@ -63,8 +84,18 @@ const SearchBar = ({ showInput, setShowInput }: showInputType) => {
             type="text"
             placeholder={searchBarPlaceholder}
             className="input-bordered input"
+            onChange={e => {
+              content = e.target.value
+              if (!e.target.value) {
+                setSearchContent('')
+              }
+            }}
+            onKeyDown={handleEnter}
           />
-          <button className="btn-square btn">
+          <button
+            className="btn-square btn"
+            onClick={() => setSearchContent(content)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"

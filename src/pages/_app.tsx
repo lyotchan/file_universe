@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+import 'plyr/dist/plyr.css'
 import { appWithTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
 import { Provider } from 'react-redux'

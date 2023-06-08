@@ -6,8 +6,9 @@ import Footer from '../components/Footer'
 import { useTranslation } from 'next-i18next'
 import { GetStaticPropsContext, GetStaticPropsResult } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-
-import IndexContext, { IndexContextType } from '@/contexts/IndexContext'
+import { use, useState } from 'react'
+import IndexContext from '@/contexts/IndexContext'
+import type { IndexContextType } from '@/lib/types'
 interface Props {
   _nextI18Next?: {
     initialI18nStore: any
@@ -19,14 +20,18 @@ interface Props {
 
 const Home = () => {
   const { t } = useTranslation('common')
+  const [searchContent, setSearchContent] = useState('')
   const indexData = t('index', {
     returnObjects: true
   }) as IndexContextType
   return (
     <div className="flex min-h-screen flex-col">
       <IndexContext.Provider value={indexData}>
-        <Header />
-        <FileGrid />
+        <Header
+          setSearchContent={setSearchContent}
+          searchContent={searchContent}
+        />
+        <FileGrid searchContent={searchContent} />
         <Footer />
       </IndexContext.Provider>
     </div>

@@ -2,21 +2,20 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
 import path from 'path'
-
+import { resource_path } from '@/lib/constants/index'
 export default async function downloadFile(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const { filename } = req.query
-    const filePath = path.join(
-      'E:',
-      'A_full_stack',
-      'node',
-      'transfer',
-      'resource',
-      ...filename
-    )
+    const filename: Array<string> = Array.isArray(req.query.filename)
+      ? req.query.filename
+      : []
+
+    if (!filename.length) {
+      return res.status(400).json({ error: 'File not found' })
+    }
+    const filePath = path.join(...resource_path, ...filename)
     if (!fs.existsSync(filePath)) {
       res.status(404).json({ error: 'File not found' })
       return
@@ -35,7 +34,7 @@ export default async function downloadFile(
 
       res.writeHead(206, {
         'Content-Disposition': `attachment;filename*=UTF-8''${encodeURIComponent(
-          filename.pop()
+          filename.pop() || ''
         )}`,
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
@@ -47,7 +46,7 @@ export default async function downloadFile(
     } else {
       res.writeHead(200, {
         'Content-Disposition': `attachment;filename*=UTF-8''${encodeURIComponent(
-          filename.pop()
+          filename.pop() || ''
         )}`,
         'Content-Length': fileSize,
         'Content-Type': 'application/octet-stream'

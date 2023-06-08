@@ -3,19 +3,21 @@ import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
 import ffmpeg from 'fluent-ffmpeg'
+import mime from 'mime-types'
 import ffmpegStatic from 'ffmpeg-static'
+import { resource_path } from '@/lib/constants/index'
 
+import type { FileType, cacheType } from '@/lib/types'
+
+if (ffmpegStatic === null) {
+  throw new Error('ffmpegStatic is null')
+}
 // 设置 ffmpeg 路径
 ffmpeg.setFfmpegPath(ffmpegStatic)
 
-interface FileInfo {
-  name: string
-  isDirectory: boolean
-  size: number
-  previewUrl: string
-}
+const videoExt = ['.mp4', '.webm', '.mkv', '.avi']
 const cacheFile = './public/thumbnailCache.json'
-const cache = loadCache()
+const cache: cacheType = loadCache()
 function loadCache() {
   try {
     if (fs.existsSync(cacheFile)) {
@@ -28,7 +30,7 @@ function loadCache() {
   return {}
 }
 
-function saveCache(cache) {
+function saveCache(cache: cacheType) {
   try {
     const data = JSON.stringify(cache, null, 2)
     fs.writeFileSync(cacheFile, data, 'utf-8')
@@ -70,7 +72,7 @@ const getPreviewUrl = async (
     return `/previews/${fileName}.jpg`
   }
   // 处理视频预览图
-  if (['.mp4', '.webm', '.mkv', '.avi'].includes(fileExt)) {
+  if (videoExt.includes(fileExt)) {
     return new Promise((resolve, reject) => {
       ffmpeg(filePath)
         .screenshots({
@@ -94,18 +96,11 @@ const getPreviewUrl = async (
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<FileInfo[]>
+  res: NextApiResponse
 ) {
-  const { folderPath } = req.query
+  const folderPath = req.query.folderPath as string[]
   console.log('url', req.url)
-  const folderFullPath = path.join(
-    'E:',
-    'A_full_stack',
-    'node',
-    'transfer',
-    'resource',
-    ...folderPath.slice(1)
-  ) // 你想要读取的文件夹路径，可以根据需要调整
+  const folderFullPath = path.join(...resource_path, ...folderPath.slice(1)) // 你想要读取的文件夹路径，可以根据需要调整
 
   try {
     const fileNames = fs.readdirSync(folderFullPath)
@@ -114,17 +109,27 @@ export default async function handler(
       const stats = fs.statSync(filePath),
         isDir = stats.isDirectory()
       const previewUrl = await getPreviewUrl(filePath, fileName, isDir)
-
+      const fileExt = path.extname(fileName).toLowerCase()
+      const mimeType = mime.lookup(fileExt)
       return {
         name: fileName,
         isDirectory: isDir,
         size: stats.size,
-        previewUrl
+        previewUrl,
+        isVideo: videoExt.includes(fileExt),
+        isImage: !!mimeType && mimeType.startsWith('image/')
       }
     })
 
-    const fileInfoList = await Promise.all(fileInfoListPromises)
-    res.status(200).json(fileInfoList)
+    try {
+      const fileInfoList = await Promise.all(fileInfoListPromises)
+      res.status(200).json(fileInfoList)
+    } catch (e) {
+      console.log(e)
+      e instanceof Error
+        ? res.status(500).json({ message: e.message })
+        : res.status(500).json({ message: 'unkown error at fileInfo api' })
+    }
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Error reading folder' })

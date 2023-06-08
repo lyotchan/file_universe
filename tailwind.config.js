@@ -7,6 +7,17 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        'default-theme': 'hsla(var(--b1) / var(--tw-bg-opacity, 1))'
+      },
+      gridAutoRows: {
+        20: '20px'
+      },
+      gridRowEnd: {
+        4: 'span 4',
+        6: 'span 6',
+        8: 'span 8'
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':

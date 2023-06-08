@@ -2,7 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
 import path from 'path'
-
+import { resource_path } from '@/lib/constants/index'
 interface CreateFolderRequestBody {
   folderName: string
   folderPath: string
@@ -33,15 +33,7 @@ const createFolderHandler = async (
   // 在服务器文件系统上创建文件夹
   console.log('folderPath', folderPath)
 
-  const folderFullPath = path.join(
-    'E:',
-    'A_full_stack',
-    'node',
-    'transfer',
-    'resource',
-    folderPath,
-    folderName
-  )
+  const folderFullPath = path.join(...resource_path, folderPath, folderName)
   try {
     fs.mkdirSync(folderFullPath)
     res.status(200).json({ message: 'Folder created successfully' })

@@ -3,7 +3,7 @@ const { i18n } = require('./next-i18next.config')
 const CompressionPlugin = require('compression-webpack-plugin')
 const zlib = require('zlib')
 const nextConfig = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
   i18n,
   webpack: (config, { isServer, dev }) => {
     if (!dev && isServer) {

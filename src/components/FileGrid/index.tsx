@@ -2,33 +2,24 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import FileInfoCard from './FileInfoCard'
 
-// type FileType = {
-//   name: string
-//   size: string
-//   previewUrl: string
-//   isCreateFolder?: boolean
-// }
-export interface FileType {
-  name: string
-  size: number
-  previewUrl: string
-  isDirectory?: boolean
-  isCreateFolder?: boolean
-  [key: string]: any // 允许接口具有其他任意属性
-}
-interface breadcrumbsType {
-  path: string
-  name: string
-}
-const FileGrid = () => {
+import { ChevronDoubleUpIcon } from '@heroicons/react/24/outline'
+import ImageViewer from '../ImageViewer'
+import ModalInput from '../ModalInput'
+
+import type { breadcrumbsType, FileType, searchContentType } from '@/lib/types'
+
+const FileGrid = ({ searchContent }: searchContentType) => {
+  const [isOpen, setIsOpen] = useState(false)
+
   const [files, setFiles] = useState<Array<FileType>>([
     {
       name: 'Create Folder',
-      size: 0,
       previewUrl: '/imgs/add_folder_icon.png',
       isCreateFolder: true
     }
   ])
+  const [src, setSrc] = useState('/')
+  const [isShow, setIsShow] = useState(false)
 
   const [breadcrumbs, setBreadcrumbs] = useState<Array<breadcrumbsType>>([
     {
@@ -37,7 +28,7 @@ const FileGrid = () => {
     }
   ])
 
-  function selectBreadcrumbs(targetIndex) {
+  function selectBreadcrumbs(targetIndex: number) {
     setBreadcrumbs(breadcrumbs.slice(0, targetIndex + 1))
   }
   useEffect(() => {
@@ -49,7 +40,6 @@ const FileGrid = () => {
         const responseData = await response.json()
         responseData.push({
           name: 'Create Folder',
-          size: 0,
           previewUrl: '/imgs/add_folder_icon.png',
           isCreateFolder: true
         })
@@ -60,9 +50,93 @@ const FileGrid = () => {
     }
     fetchData()
   }, [breadcrumbs]) // 空数组作为依赖项，仅在组件挂载时发起请求
+
+  const [isVisible, setIsVisible] = useState(false)
+
+  const toggleVisibility = () => {
+    if (window.pageYOffset > 300) {
+      setIsVisible(true)
+    } else {
+      setIsVisible(false)
+    }
+  }
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+  async function createFolder(folderName: string, folderPath: string) {
+    try {
+      const response = await fetch('/api/create-folder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          folderName,
+          folderPath
+        })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.message)
+      }
+      console.log('Folder created successfully:', data)
+    } catch (error: unknown) {
+      if (typeof error === 'string') {
+        throw new Error(error)
+      } else if (error instanceof Error) {
+        throw error
+      } else {
+        throw new Error('An unknown error occurred')
+      }
+    }
+  }
+
+  const handleConfirm = async (folderName: string) => {
+    const invalidCharacters = /[<>:"/\\|?*]/
+    if (!invalidCharacters.test(folderName)) {
+      try {
+        await createFolder(
+          folderName,
+          breadcrumbs.reduce((a: string, b: breadcrumbsType) => a + b.path, '')
+        )
+        setIsOpen(false)
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          alert(e.message)
+        } else {
+          console.log(e)
+        }
+      }
+    } else {
+      alert('无效的文件夹名，请避免使用以下字符：\\ / : * ? " < > |')
+    }
+  }
+  const handleCancel = () => {
+    console.log('取消创建文件夹')
+    setIsOpen(false)
+  }
+  useEffect(() => {
+    window.addEventListener('scroll', toggleVisibility)
+    return () => window.removeEventListener('scroll', toggleVisibility)
+  }, [])
+  console.log(searchContent, 'fileGrid')
   return (
     <div className="container mx-auto mb-2 px-4 pt-20">
-      <div className="breadcrumbs max-w-full text-sm">
+      <ModalInput
+        isOpen={isOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+      <ImageViewer
+        src={src}
+        isShow={isShow}
+        setIsShow={setIsShow}
+      ></ImageViewer>
+      <div className="breadcrumbs mb-2 max-w-full text-base">
         <ul>
           {breadcrumbs.map(({ path, name }, index) => (
             <li
@@ -90,19 +164,35 @@ const FileGrid = () => {
           ))}
         </ul>
       </div>
-      <div className="grid auto-rows-min grid-cols-[repeat(auto-fill,minmax(156px,166px))] gap-3">
-        {files.map((file, index) => (
-          <FileInfoCard
-            key={index}
-            name={file.name}
-            size={file.size}
-            previewUrl={file.previewUrl}
-            isCreateFolder={file.isCreateFolder}
-            isDirectory={file.isDirectory}
-            breadcrumbs={[breadcrumbs, setBreadcrumbs]}
-          />
-        ))}
+      <div className="grid auto-rows-20 grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
+        {files
+          .filter(file => file.name.includes(searchContent))
+          .map((file, index) => (
+            <FileInfoCard
+              key={index}
+              setSrc={setSrc}
+              setIsShow={setIsShow}
+              index={index}
+              name={file.name}
+              size={file.size || 0}
+              previewUrl={file.previewUrl}
+              isCreateFolder={file.isCreateFolder || false}
+              isDirectory={file.isDirectory || false}
+              breadcrumbs={[breadcrumbs, setBreadcrumbs]}
+              isVideo={file.isVideo || false}
+              isImage={file.isImage || false}
+              setIsOpen={setIsOpen}
+            />
+          ))}
       </div>
+      {isVisible && (
+        <div
+          onClick={scrollToTop}
+          className="fixed bottom-4 right-4 cursor-pointer rounded-full bg-primary p-2"
+        >
+          <ChevronDoubleUpIcon className="h-4 w-4 text-base-200" />
+        </div>
+      )}
     </div>
   )
 }
